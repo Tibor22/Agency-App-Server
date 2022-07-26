@@ -37,6 +37,7 @@ export default class User {
 			isDocUploaded: user.isDocUploaded,
 			updatedAt: user.updatedAt,
 			createdAt: user.createdAt,
+			password: user.password,
 		};
 	}
 

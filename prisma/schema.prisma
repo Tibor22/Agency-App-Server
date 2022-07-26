@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+
+model User {
+  id               Int     @id @default(autoincrement())
+  email            String  @unique
+  type             String
+  password         String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  employeeProfile  EmployeeProfile?
+  employerProfile  EmployerProfile?
+  terms            Boolean @default(false)
+	privacyPolicy    Boolean @default(false)
+	isDocUploaded    Boolean @default(false)
+	isContractSinged Boolean @default(false)
+}
+
+model EmployeeProfile {
+  id            Int     @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  DoB           DateTime
+  address       String
+  profileImgUrl String?
+  phoneNum      Int?
+  gender        String
+  rating        Int?
+  bio           String?
+  user          User    @relation(fields: [userId], references: [id])
+  userId        Int @unique
+  updatedAt     DateTime @updatedAt
+}
+
+model EmployerProfile {
+  user             User    @relation(fields: [userId], references: [id])
+  userId           Int @unique
+  firstName        String
+  lastName         String
+  DoB              DateTime?
+  companyAddress   String
+  profileImgUrl    String?
+  phoneNum         Int?
+  bio              String?
+  startOfBusiness  DateTime
+	sizeOfBusiness   Int?
+	typeOfBusiness   String
+  companyName      String
+	businessPermit   Boolean @default(false)
+  updatedAt        DateTime @updatedAt
+}

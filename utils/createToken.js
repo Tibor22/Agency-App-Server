@@ -2,9 +2,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export const createToken = async (user, password) => {
-	console.log('USER', user);
 	const match = await bcrypt.compare(password, user.password);
-	const accessToken = jwt.sign(JSON.stringify(user), process.env.JWT_SECRET, {
+	const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRY,
 	});
 	if (match) {

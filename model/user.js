@@ -66,4 +66,41 @@ export default class User {
 			console.log(e);
 		}
 	}
+
+	static async findById(userId) {
+		const foundUser = await dbClient.user.findUnique({
+			where: {
+				id: userId,
+			},
+		});
+
+		return User.fromDB(foundUser);
+	}
+
+	static async findByEmail(email) {
+		const foundUser = await dbClient.user.findUnique({
+			where: {
+				email: email,
+			},
+		});
+		const type = foundUser.type;
+		if (type === 'employee') {
+			const finalUser = await dbClient.user.findUnique({
+				where: {
+					email: email,
+				},
+				include: { employeeProfile: true },
+			});
+
+			return { ...finalUser, profile: finalUser.employeeProfile };
+		} else if (type === 'employer') {
+			const finalUser = await dbClient.user.findUnique({
+				where: {
+					email: email,
+				},
+				include: { employerProfile: true },
+			});
+			return { ...finalUser, profile: finalUser.employerProfile };
+		}
+	}
 }

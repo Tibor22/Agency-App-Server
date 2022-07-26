@@ -9,6 +9,6 @@ export const createToken = async (user, password) => {
 	if (match) {
 		return { accessToken: accessToken };
 	} else {
-		return { message: 'Invalid Credentials' };
+		return false;
 	}
 };

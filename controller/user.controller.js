@@ -38,12 +38,17 @@ export const loginUser = async (req, res) => {
 		if (!foundUser) {
 			throw new Error('User not found');
 		}
-		console.log(foundUser);
+		if (!(await createToken(foundUser, password))) {
+			throw new Error('Invalid credentials');
+		}
 		res.status(200).send({
-			...(await createToken(foundUser, password)),
-			firstName: foundUser.profile.firstName,
-			lastName: foundUser.profile.lastName,
-			type: foundUser.type,
+			data: {
+				...(await createToken(foundUser, password)),
+				firstName: foundUser.profile.firstName,
+				lastName: foundUser.profile.lastName,
+				type: foundUser.type,
+				userId: foundUser.id,
+			},
 		});
 	} catch (e) {
 		res.status(400).send({ error: e.message });

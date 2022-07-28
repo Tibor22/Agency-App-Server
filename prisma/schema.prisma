@@ -55,7 +55,7 @@ model EmployerProfile {
   bio              String?
   startOfBusiness  DateTime
 	sizeOfBusiness   Int?
-	typeOfBusiness   String
+	typeOfBusiness   String?
   companyName      String
 	businessPermit   Boolean @default(false)
   updatedAt        DateTime @updatedAt

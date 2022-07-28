@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export const createToken = async (user, password) => {
 	const match = await bcrypt.compare(password, user.password);
+	console.log(match);
 	const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRY,
 	});

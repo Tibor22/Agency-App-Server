@@ -50,7 +50,6 @@ export default class Profile {
 				companyName,
 				DoB,
 				startOfBusiness,
-				typeOfBusiness,
 				gender,
 			} = data;
 			return new Profile(
@@ -61,8 +60,7 @@ export default class Profile {
 				gender === undefined ? null : gender,
 				address,
 				companyName,
-				startOfBusiness,
-				typeOfBusiness
+				startOfBusiness
 			);
 		}
 	}
@@ -91,7 +89,6 @@ export default class Profile {
 						companyName: this.companyName,
 						companyAddress: this.address,
 						startOfBusiness: this.startOfBusiness,
-						typeOfBusiness: this.typeOfBusiness,
 					},
 				});
 				return newProfile;

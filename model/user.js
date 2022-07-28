@@ -58,7 +58,8 @@ export default class User {
 					email: this.email,
 					type: this.type,
 					password: this.password,
-					type: this.type,
+					terms: this.terms,
+					privacyPolicy: this.privacyPolicy,
 				},
 			});
 			return User.fromDB(user);
@@ -78,29 +79,34 @@ export default class User {
 	}
 
 	static async findByEmail(email) {
-		const foundUser = await dbClient.user.findUnique({
-			where: {
-				email: email,
-			},
-		});
-		const type = foundUser.type;
-		if (type === 'employee') {
-			const finalUser = await dbClient.user.findUnique({
+		try {
+			const foundUser = await dbClient.user.findUnique({
 				where: {
 					email: email,
 				},
-				include: { employeeProfile: true },
 			});
+			console.log(foundUser);
+			const type = foundUser.type;
+			if (type === 'employee') {
+				const finalUser = await dbClient.user.findUnique({
+					where: {
+						email: email,
+					},
+					include: { employeeProfile: true },
+				});
 
-			return { ...finalUser, profile: finalUser.employeeProfile };
-		} else if (type === 'employer') {
-			const finalUser = await dbClient.user.findUnique({
-				where: {
-					email: email,
-				},
-				include: { employerProfile: true },
-			});
-			return { ...finalUser, profile: finalUser.employerProfile };
+				return finalUser;
+			} else if (type === 'employer') {
+				const finalUser = await dbClient.user.findUnique({
+					where: {
+						email: email,
+					},
+					include: { employerProfile: true },
+				});
+				return finalUser;
+			}
+		} catch (e) {
+			throw new Error('User not found');
 		}
 	}
 }

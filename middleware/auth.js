@@ -10,12 +10,14 @@ export const authenticateUser = async (req, res, next) => {
 				authorization: 'Missing Authorization header',
 			});
 		}
+		console.log(req.headers);
+		const [type, token] = req.headers.authorization.split(' ');
+		console.log(type, token);
 		const isTypeValid = validateTokenType(type);
 		if (!isTypeValid) {
 			throw new Error('Invalid token type');
 		}
 
-		const [type, token] = req.headers.authorization.split(' ');
 		if (!token || !type) throw new Error('Invalid token');
 
 		const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -37,5 +39,5 @@ export const authenticateUser = async (req, res, next) => {
 };
 
 function validateTokenType(type) {
-	if (type.toUpperCase() !== 'BEARER') return false;
+	return type.toUpperCase() === 'BEARER';
 }

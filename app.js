@@ -5,6 +5,8 @@ import 'dotenv/config';
 import api from './routes/api.js';
 
 const app = express();
+app.use(express.static('images'));
+app.use('/images', express.static('images'));
 app.disable('x-powered-by');
 app.use(
 	cors({

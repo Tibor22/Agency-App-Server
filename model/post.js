@@ -3,7 +3,7 @@ import dbClient from '../utils/prisma.js';
 export default class Post {
 	constructor(
 		userId,
-		title,
+		companyName,
 		content,
 		numOfApplicants,
 		jobType,
@@ -11,12 +11,14 @@ export default class Post {
 		endDate,
 		salary,
 		location,
+		timeFrame,
+		imgUrl,
 		createdAt,
 		updatedAt,
 		id
 	) {
 		this.userId = userId;
-		this.title = title;
+		this.companyName = companyName;
 		this.content = content;
 		this.numOfApplicants = numOfApplicants;
 		this.jobType = jobType;
@@ -24,6 +26,8 @@ export default class Post {
 		this.endDate = endDate;
 		this.salary = salary;
 		this.location = location;
+		this.timeFrame = timeFrame;
+		this.imgUrl = imgUrl;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.id = id;
@@ -32,7 +36,7 @@ export default class Post {
 	static fromJSON(post) {
 		const {
 			userId,
-			title,
+			companyName,
 			content,
 			numOfApplicants,
 			jobType,
@@ -40,18 +44,22 @@ export default class Post {
 			endDate,
 			salary,
 			location,
+			timeFrame,
+			imgUrl,
 		} = post;
 
 		return new Post(
 			userId,
-			title,
+			companyName,
 			content,
-			numOfApplicants,
+			+numOfApplicants,
 			jobType,
 			startDate,
 			endDate,
-			salary,
-			location
+			+salary,
+			location,
+			timeFrame,
+			imgUrl
 		);
 	}
 
@@ -59,7 +67,7 @@ export default class Post {
 		const createdPost = await dbClient.jobPost.create({
 			data: {
 				userId: this.userId,
-				title: this.title,
+				companyName: this.companyName,
 				content: this.content,
 				numOfApplicants: this.numOfApplicants,
 				jobType: this.jobType,
@@ -67,9 +75,35 @@ export default class Post {
 				endDate: this.endDate,
 				salary: this.salary,
 				location: this.location,
+				timeFrame: this.timeFrame,
+				imageUrl: this.imgUrl,
 			},
 		});
 
 		return createdPost;
+	}
+
+	static async getAll(start, end, location, jobType, gte = 0, lte = 30) {
+		const allPost = await dbClient.jobPost.findMany({
+			where: {
+				jobType: {
+					contains: jobType,
+					mode: 'insensitive',
+				},
+				location: {
+					contains: location,
+					mode: 'insensitive',
+				},
+				salary: {
+					gte,
+					lte,
+				},
+			},
+
+			skip: start,
+			take: end,
+		});
+
+		return allPost;
 	}
 }

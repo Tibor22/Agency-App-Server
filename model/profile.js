@@ -97,4 +97,33 @@ export default class Profile {
 			console.log(e);
 		}
 	}
+
+	static async update(name, value, type, userId) {
+		let newProfile;
+		try {
+			if (type === 'employee') {
+				newProfile = await dbClient.employeeProfile.update({
+					where: {
+						userId,
+					},
+					data: {
+						[name]: value,
+					},
+				});
+				return newProfile;
+			} else if (type === 'employer') {
+				newProfile = await dbClient.employerProfile.update({
+					where: {
+						userId,
+					},
+					data: {
+						[name]: value,
+					},
+				});
+				return newProfile;
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	}
 }

@@ -3,7 +3,6 @@ import User from '../model/user.js';
 
 export const authenticateUser = async (req, res, next) => {
 	try {
-		console.log(req.header);
 		const header = req.header('authorization');
 
 		if (!header) {

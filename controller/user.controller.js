@@ -72,12 +72,27 @@ export const validateUserByEmail = async (req, res) => {
 };
 
 export const getUserById = async (req, res) => {
-	console.log('INSIDE');
-	console.log(req.params.id);
 	const id = +req.params.id;
 	const foundUser = await User.findBy('id', id);
 	delete foundUser.password;
 	res.status(200).send(foundUser);
+};
 
-	// const foundUser = await
+export const updateProfile = async (req, res) => {
+	console.log(req.body);
+	let [value] = Object.values(req.body);
+	const [name] = Object.keys(req.body);
+	const type = req.user.type;
+	const userId = +req.user.id;
+	console.log(name, value, type, userId);
+	if (name === 'phoneNum') {
+		console.log(value);
+		value = value.replaceAll(' ', '');
+		value = +value;
+		console.log(value);
+	}
+
+	const updatedUser = await Profile.update(name, value, type, userId);
+	res.status(200).send({ updatedUser });
+	console.log(updatedUser);
 };

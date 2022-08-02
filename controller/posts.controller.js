@@ -30,6 +30,10 @@ export const getAllPosts = async (req, res) => {
 	const jobType = req.query.type;
 	const gte = +req.query.gte;
 	const lte = +req.query.lte;
+	const gteDate =
+		req.query.gteDate !== 'undefined'
+			? new Date(req.query.gteDate)
+			: new Date();
 
 	console.log(pageFrom, pageTo);
 	const allPost = await Post.getAll(
@@ -38,7 +42,8 @@ export const getAllPosts = async (req, res) => {
 		location,
 		jobType,
 		gte,
-		lte
+		lte,
+		gteDate
 	);
 
 	res.status(200).send(allPost);

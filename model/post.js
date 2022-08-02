@@ -83,7 +83,15 @@ export default class Post {
 		return createdPost;
 	}
 
-	static async getAll(start, end, location, jobType, gte = 0, lte = 30) {
+	static async getAll(
+		start,
+		end,
+		location,
+		jobType,
+		gte = 0,
+		lte = 30,
+		gteDate = new Date()
+	) {
 		const allPost = await dbClient.jobPost.findMany({
 			where: {
 				jobType: {
@@ -97,6 +105,9 @@ export default class Post {
 				salary: {
 					gte,
 					lte,
+				},
+				startDate: {
+					gte: gteDate,
 				},
 			},
 

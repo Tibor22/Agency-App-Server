@@ -34,7 +34,7 @@ export const loginUser = async (req, res) => {
 			throw new Error('Invalid email or password');
 		}
 
-		const foundUser = await User.findByEmail(email);
+		const foundUser = await User.findBy('email', email);
 		if (!foundUser) {
 			throw new Error('User not found');
 		}
@@ -60,7 +60,7 @@ export const loginUser = async (req, res) => {
 export const validateUserByEmail = async (req, res) => {
 	const email = req.params.email;
 	try {
-		const foundUser = await User.findByEmail(email);
+		const foundUser = await User.findBy('email', email);
 		if (!foundUser) {
 			throw new Error('User not found');
 		}
@@ -69,4 +69,15 @@ export const validateUserByEmail = async (req, res) => {
 		console.log(e.message);
 		res.status(400).send({ msg: 'User not found' });
 	}
+};
+
+export const getUserById = async (req, res) => {
+	console.log('INSIDE');
+	console.log(req.params.id);
+	const id = +req.params.id;
+	const foundUser = await User.findBy('id', id);
+	delete foundUser.password;
+	res.status(200).send(foundUser);
+
+	// const foundUser = await
 };

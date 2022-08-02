@@ -78,11 +78,11 @@ export default class User {
 		return User.fromDB(foundUser);
 	}
 
-	static async findByEmail(email) {
+	static async findBy(name, value) {
 		try {
 			const foundUser = await dbClient.user.findUnique({
 				where: {
-					email: email,
+					[name]: value,
 				},
 			});
 			console.log(foundUser);
@@ -90,7 +90,7 @@ export default class User {
 			if (type === 'employee') {
 				const finalUser = await dbClient.user.findUnique({
 					where: {
-						email: email,
+						[name]: value,
 					},
 					include: { employeeProfile: true },
 				});
@@ -99,7 +99,7 @@ export default class User {
 			} else if (type === 'employer') {
 				const finalUser = await dbClient.user.findUnique({
 					where: {
-						email: email,
+						[name]: value,
 					},
 					include: { employerProfile: true },
 				});

@@ -72,10 +72,19 @@ export const validateUserByEmail = async (req, res) => {
 };
 
 export const getUserById = async (req, res) => {
+	console.log(req.query.include);
 	const id = +req.params.id;
-	const foundUser = await User.findBy('id', id);
-	delete foundUser.password;
-	res.status(200).send(foundUser);
+	if (req.query.include) {
+		const gte = new Date(Date.now()).toISOString();
+		console.log(gte);
+		const foundUser = await User.findById(id, req.query.include, gte);
+		delete foundUser.password;
+		res.status(200).send(foundUser);
+	} else {
+		const foundUser = await User.findBy('id', id);
+		delete foundUser.password;
+		res.status(200).send(foundUser);
+	}
 };
 
 export const updateProfile = async (req, res) => {

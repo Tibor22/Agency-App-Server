@@ -68,14 +68,33 @@ export default class User {
 		}
 	}
 
-	static async findById(userId) {
-		const foundUser = await dbClient.user.findUnique({
-			where: {
-				id: userId,
-			},
-		});
+	static async findById(userId, includePost = false, gte) {
+		let foundUser;
+		if (includePost) {
+			foundUser = await dbClient.user.findUnique({
+				where: {
+					id: userId,
+				},
+				include: {
+					jobPost: {
+						where: {
+							endDate: {
+								gte,
+							},
+						},
+					},
+					employerProfile: true,
+				},
+			});
+		} else {
+			foundUser = await dbClient.user.findUnique({
+				where: {
+					id: userId,
+				},
+			});
+		}
 
-		return User.fromDB(foundUser);
+		return foundUser;
 	}
 
 	static async findBy(name, value) {

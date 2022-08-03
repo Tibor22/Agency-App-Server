@@ -28,8 +28,8 @@ export const getAllPosts = async (req, res) => {
 	const pageTo = 12;
 	const location = req.query.location;
 	const jobType = req.query.type;
-	const gte = +req.query.gte;
-	const lte = +req.query.lte;
+	const gte = +req.query.gte || 10;
+	const lte = +req.query.lte || 30;
 	const gteDate =
 		req.query.gteDate !== 'undefined'
 			? new Date(req.query.gteDate)

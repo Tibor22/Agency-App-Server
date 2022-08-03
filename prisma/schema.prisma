@@ -35,7 +35,7 @@ model EmployeeProfile {
   DoB           DateTime
   address       String
   profileImgUrl String?
-  phoneNum      Int?
+  phoneNum      String?
   gender        String
   rating        Int?
   bio           String?
@@ -53,7 +53,7 @@ model EmployerProfile {
   DoB              DateTime?
   companyAddress   String
   profileImgUrl    String?
-  phoneNum         Int?
+  phoneNum         String?
   bio              String?
   startOfBusiness  DateTime
 	sizeOfBusiness   Int?

@@ -79,20 +79,17 @@ export const getUserById = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-	console.log(req.body);
 	let [value] = Object.values(req.body);
 	const [name] = Object.keys(req.body);
 	const type = req.user.type;
 	const userId = +req.user.id;
-	console.log(name, value, type, userId);
 	if (name === 'phoneNum') {
-		console.log(value);
 		value = value.replaceAll(' ', '');
+	}
+	if (name === 'sizeOfBusiness') {
 		value = +value;
-		console.log(value);
 	}
 
 	const updatedUser = await Profile.update(name, value, type, userId);
 	res.status(200).send({ updatedUser });
-	console.log(updatedUser);
 };

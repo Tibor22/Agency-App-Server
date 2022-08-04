@@ -6,6 +6,7 @@ import {
 	validateUserByEmail,
 	getUserById,
 	updateProfile,
+	connectProfile,
 } from '../../controller/user.controller.js';
 import multer from 'multer';
 
@@ -28,7 +29,12 @@ userRouter.post('/image', upload.single('file'), function (req, res) {
 userRouter.post('/create', createUser);
 userRouter.post('/login', loginUser);
 userRouter.get('/:email', validateUserByEmail);
-userRouter.get('/find/:id', getUserById);
+userRouter.get('/find/:id', authenticateUser, getUserById);
 userRouter.patch('/profile/update/:id', authenticateUser, updateProfile);
+userRouter.post(
+	'/profile/connect-profile/:id',
+	authenticateUser,
+	connectProfile
+);
 
 export default userRouter;

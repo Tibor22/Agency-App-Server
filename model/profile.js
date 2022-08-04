@@ -127,7 +127,7 @@ export default class Profile {
 		}
 	}
 
-	static async findById(userId, includePost = false, gte, type) {
+	static async findById(userId, includePost = false, gte, type, profileId) {
 		let foundUser;
 		if (includePost && type === 'employer') {
 			foundUser = await dbClient.user.findUnique({
@@ -148,7 +148,36 @@ export default class Profile {
 					},
 				},
 			});
-		} else if (includePost && type === 'employee') {
+		} else if (includePost && type === 'employee' && profileId > 0) {
+			const posts = await dbClient.JobPostsOnEmployeeProfiles.findMany({
+				where: {
+					employeeProfileId: profileId,
+				},
+				include: { jobPost: true, employeeProfile: true },
+			});
+
+			const modifiedPosts = posts.map((post) => {
+				return post.jobPost;
+			});
+
+			console.log('POSTS:', posts);
+			if (posts.length === 0) {
+				const newUser = await dbClient.user.findUnique({
+					where: {
+						id: userId,
+					},
+					include: { [`${type}Profile`]: true },
+				});
+
+				return newUser;
+			}
+			const user = {
+				employeeProfile: posts[0].employeeProfile,
+				employeeProfileId: posts[0].employeeProfileId,
+				jobPosts: modifiedPosts,
+				jobPostId: posts[0].jobPostId,
+			};
+			return user;
 		} else {
 			foundUser = await dbClient.user.findUnique({
 				where: {
@@ -158,5 +187,30 @@ export default class Profile {
 		}
 
 		return foundUser;
+	}
+
+	static async connect(userId, postId, profileId) {
+		try {
+			const assignCategories = await dbClient.jobPostsOnEmployeeProfiles.create(
+				{
+					data: {
+						employeeProfile: {
+							connect: {
+								id: profileId,
+							},
+						},
+						jobPost: {
+							connect: {
+								id: postId,
+							},
+						},
+					},
+				}
+			);
+
+			console.log(assignCategories);
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }

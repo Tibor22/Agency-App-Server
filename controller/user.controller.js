@@ -20,6 +20,7 @@ export const createUser = async function (req, res) {
 				lastName: profile.lastName,
 				type: user.type,
 				userId: user.id,
+				profileId: profile.id,
 			});
 		}
 	} catch (e) {
@@ -50,6 +51,7 @@ export const loginUser = async (req, res) => {
 				lastName: foundUser[profile].lastName,
 				type: foundUser.type,
 				userId: foundUser.id,
+				profileId: foundUser[profile].id,
 			},
 		});
 	} catch (e) {
@@ -75,9 +77,18 @@ export const getUserById = async (req, res) => {
 	console.log(req.query.include);
 	const id = +req.params.id;
 	const type = req.user.type;
+	const profileId = +req.query?.profileId;
+
 	if (req.query.include) {
 		const gte = new Date(Date.now()).toISOString();
-		const foundUser = await Profile.findById(id, req.query.include, gte);
+		const foundUser = await Profile.findById(
+			id,
+			req.query.include,
+			gte,
+			type,
+			profileId
+		);
+		console.log('FOUND USER', foundUser);
 		delete foundUser.password;
 		res.status(200).send(foundUser);
 	} else {
@@ -104,4 +115,17 @@ export const updateProfile = async (req, res) => {
 
 	const updatedUser = await Profile.update(name, value, type, userId);
 	res.status(200).send({ updatedUser });
+};
+
+export const connectProfile = async (req, res) => {
+	const userId = +req.params.id;
+	const postId = +req.body.postId;
+	const profileId = +req.body.profileId;
+	console.log(userId, postId, profileId);
+
+	const connect = await Profile.connect(userId, postId, profileId);
+
+	console.log(connect);
+	// delete foundUser.password;
+	res.status(200).send({ answer: 'good' });
 };

@@ -126,4 +126,37 @@ export default class Profile {
 			console.log(e);
 		}
 	}
+
+	static async findById(userId, includePost = false, gte, type) {
+		let foundUser;
+		if (includePost && type === 'employer') {
+			foundUser = await dbClient.user.findUnique({
+				where: {
+					id: userId,
+				},
+				include: {
+					employerProfile: {
+						include: {
+							jobPost: {
+								where: {
+									endDate: {
+										gte,
+									},
+								},
+							},
+						},
+					},
+				},
+			});
+		} else if (includePost && type === 'employee') {
+		} else {
+			foundUser = await dbClient.user.findUnique({
+				where: {
+					id: userId,
+				},
+			});
+		}
+
+		return foundUser;
+	}
 }

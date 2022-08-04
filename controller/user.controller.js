@@ -74,14 +74,17 @@ export const validateUserByEmail = async (req, res) => {
 export const getUserById = async (req, res) => {
 	console.log(req.query.include);
 	const id = +req.params.id;
+	const type = req.user.type;
 	if (req.query.include) {
 		const gte = new Date(Date.now()).toISOString();
-		console.log(gte);
-		const foundUser = await User.findById(id, req.query.include, gte);
+		const foundUser = await Profile.findById(id, req.query.include, gte);
 		delete foundUser.password;
 		res.status(200).send(foundUser);
 	} else {
+		console.log('INSIDE ELSE STATEMENT');
 		const foundUser = await User.findBy('id', id);
+
+		console.log('FOUNDUSER:', foundUser);
 		delete foundUser.password;
 		res.status(200).send(foundUser);
 	}

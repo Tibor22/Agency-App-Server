@@ -64,9 +64,16 @@ export default class Post {
 	}
 
 	async create() {
+		const profile = await dbClient.employerProfile.findUnique({
+			where: {
+				userId: this.userId,
+			},
+		});
+
+		console.log('PROFILE', profile);
 		const createdPost = await dbClient.jobPost.create({
 			data: {
-				userId: this.userId,
+				employerProfileId: profile.id,
 				companyName: this.companyName,
 				content: this.content,
 				numOfApplicants: this.numOfApplicants,

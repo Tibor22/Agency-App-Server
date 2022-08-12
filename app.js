@@ -8,11 +8,7 @@ const app = express();
 app.use(express.static('images'));
 app.use('/images', express.static('images'));
 app.disable('x-powered-by');
-app.use(
-	cors({
-		origin: 'http://localhost:3001',
-	})
-);
+app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use('/v1', api);

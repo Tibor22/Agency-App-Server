@@ -10,7 +10,7 @@ app.use('/images', express.static('images'));
 app.disable('x-powered-by');
 app.use(
 	cors({
-		origin: 'http://localhost:3000',
+		origin: 'http://localhost:3001',
 	})
 );
 app.use(morgan('dev'));

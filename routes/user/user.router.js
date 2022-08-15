@@ -7,6 +7,7 @@ import {
 	getUserById,
 	updateProfile,
 	connectProfile,
+	getProfileWithJobs,
 } from '../../controller/user.controller.js';
 import multer from 'multer';
 
@@ -30,6 +31,7 @@ userRouter.post('/create', createUser);
 userRouter.post('/login', loginUser);
 userRouter.get('/:email', validateUserByEmail);
 userRouter.get('/find/:id', authenticateUser, getUserById);
+userRouter.get('/findProfile/:id', authenticateUser, getProfileWithJobs);
 userRouter.patch('/profile/update/:id', authenticateUser, updateProfile);
 userRouter.post(
 	'/profile/connect-profile/:id',

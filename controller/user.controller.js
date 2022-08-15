@@ -76,46 +76,28 @@ export const validateUserByEmail = async (req, res) => {
 };
 
 export const getUserById = async (req, res) => {
-	const includePost = req.query.include;
 	const id = +req.params.id;
-	const type = req.user.type;
-	const profileId = +req.query?.profileId;
 
-	if (includePost) {
-		const gte = new Date(Date.now()).toISOString();
-		let foundUser;
-		if (type === 'employee') {
-			console.log('INSIDE EMPLOYEE');
-			foundUser = await Profile.getEmployeeAndJobs(id, profileId, includePost);
-		}
-		if (type === 'employer') {
-			foundUser = await Profile.getEmployerAndJobs(id, gte, includePost);
-		}
-		delete foundUser.password;
-		res.status(200).send(foundUser);
-	} else {
-		const foundUser = await User.findBy('id', id);
-		delete foundUser.password;
-		res.status(200).send(foundUser);
-	}
+	const foundUser = await User.findBy('id', id);
+	delete foundUser.password;
+	res.status(200).send(foundUser);
 };
 
-// export const getProfileWithJobs = async (req, res) =>{
-// const id = +req.params.id;
-// const type = req.user.type;
-// const profileId = +req.query.profileId;
-// 	const gte = new Date(Date.now()).toISOString();
-// 	let foundUser;
-// 	if (type === 'employee') {
-// 		console.log('INSIDE EMPLOYEE');
-// 		foundUser = await Profile.getEmployeeAndJobs(id, profileId, includePost);
-// 	}
-// 	if (type === 'employer') {
-// 		foundUser = await Profile.getEmployerAndJobs(id, gte, includePost);
-// 	}
-// 	delete foundUser.password;
-// 	res.status(200).send(foundUser);
-// }
+export const getProfileWithJobs = async (req, res) => {
+	const id = +req.params.id;
+	const type = req.user.type;
+	const profileId = +req.query.profileId;
+	const gte = new Date(Date.now()).toISOString();
+	let foundUser;
+	if (type === 'employee') {
+		foundUser = await Profile.getEmployeeAndJobs(id, profileId);
+	}
+	if (type === 'employer') {
+		foundUser = await Profile.getEmployerAndJobs(id, gte);
+	}
+	delete foundUser.password;
+	res.status(200).send(foundUser);
+};
 
 export const updateProfile = async (req, res) => {
 	let [value] = Object.values(req.body);
@@ -137,11 +119,8 @@ export const connectProfile = async (req, res) => {
 	const userId = +req.params.id;
 	const postId = +req.body.postId;
 	const profileId = +req.body.profileId;
-	console.log(userId, postId, profileId);
 
-	const connect = await Profile.connect(userId, postId, profileId);
+	await Profile.connect(userId, postId, profileId);
 
-	console.log(connect);
-	// delete foundUser.password;
-	res.status(200).send({ answer: 'good' });
+	res.status(200).send({ status: 'ok' });
 };

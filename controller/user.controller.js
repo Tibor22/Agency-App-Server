@@ -76,32 +76,46 @@ export const validateUserByEmail = async (req, res) => {
 };
 
 export const getUserById = async (req, res) => {
-	console.log(req.query.include);
+	const includePost = req.query.include;
 	const id = +req.params.id;
 	const type = req.user.type;
 	const profileId = +req.query?.profileId;
 
-	if (req.query.include) {
+	if (includePost) {
 		const gte = new Date(Date.now()).toISOString();
-		const foundUser = await Profile.findById(
-			id,
-			req.query.include,
-			gte,
-			type,
-			profileId
-		);
-		console.log('FOUND USER', foundUser);
+		let foundUser;
+		if (type === 'employee') {
+			console.log('INSIDE EMPLOYEE');
+			foundUser = await Profile.getEmployeeAndJobs(id, profileId, includePost);
+		}
+		if (type === 'employer') {
+			foundUser = await Profile.getEmployerAndJobs(id, gte, includePost);
+		}
 		delete foundUser.password;
 		res.status(200).send(foundUser);
 	} else {
-		console.log('INSIDE ELSE STATEMENT');
 		const foundUser = await User.findBy('id', id);
-
-		console.log('FOUNDUSER:', foundUser);
 		delete foundUser.password;
 		res.status(200).send(foundUser);
 	}
 };
+
+// export const getProfileWithJobs = async (req, res) =>{
+// const id = +req.params.id;
+// const type = req.user.type;
+// const profileId = +req.query.profileId;
+// 	const gte = new Date(Date.now()).toISOString();
+// 	let foundUser;
+// 	if (type === 'employee') {
+// 		console.log('INSIDE EMPLOYEE');
+// 		foundUser = await Profile.getEmployeeAndJobs(id, profileId, includePost);
+// 	}
+// 	if (type === 'employer') {
+// 		foundUser = await Profile.getEmployerAndJobs(id, gte, includePost);
+// 	}
+// 	delete foundUser.password;
+// 	res.status(200).send(foundUser);
+// }
 
 export const updateProfile = async (req, res) => {
 	let [value] = Object.values(req.body);

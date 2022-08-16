@@ -23,7 +23,6 @@ const upload = multer({ storage: storage });
 const userRouter = new Router();
 
 userRouter.post('/image', upload.single('file'), function (req, res) {
-	console.log('INSIDE MULTER:', req.body);
 	res.json({ data: req.body });
 });
 

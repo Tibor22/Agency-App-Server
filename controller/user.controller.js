@@ -3,7 +3,7 @@ import Profile from '../model/profile.js';
 import { createToken } from '../utils/createToken.js';
 
 export const createUser = async function (req, res) {
-	const { type, terms, privacyPolicy, password, email } = req.body;
+	const { type, terms, privacyPolicy, password } = req.body;
 	try {
 		if (!privacyPolicy || !terms) {
 			throw new Error('Must accept privacy policy and terms & conditions');
@@ -70,7 +70,6 @@ export const validateUserByEmail = async (req, res) => {
 		}
 		res.status(200).send({ msg: 'User exist' });
 	} catch (e) {
-		console.log(e.message);
 		res.status(400).send({ msg: 'User not found' });
 	}
 };

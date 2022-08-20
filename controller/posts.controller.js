@@ -44,10 +44,6 @@ export const getAllPosts = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-	console.log(req.body);
-
-	if (req.body.anyoneApplied) {
-		const newPost = await Post.update({ ...req.body, userId: req.user.id });
-		res.json({ answer: newPost });
-	}
+	const newPost = await Post.update({ ...req.body, userId: req.user.id });
+	return res.json(newPost);
 };

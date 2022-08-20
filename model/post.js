@@ -127,18 +127,38 @@ export default class Post {
 
 	static async update(post) {
 		const postDetailsArr = [];
+		let newPost = [];
 
 		console.log('POST OBJ:', post);
 		for (let [key, value] of Object.entries(post)) {
 			if (key === 'userId') continue;
+			if (key === 'postId') continue;
+			if (key === 'profileId') continue;
+
 			postDetailsArr.push([key, value]);
 		}
 		const data = Object.fromEntries(postDetailsArr);
 		console.log('DATA INSIDE POST MODEL:', data);
-		const newPost = await dbClient.jobPost.update({
-			where: { id: post.userId },
-			data,
+
+		const getPost = await dbClient.jobPost.findUnique({
+			where: { id: post.postId },
 		});
+		console.log(getPost);
+		console.log('PROFILEID:', post.profileId);
+		if (!post.anyoneApplied && getPost.employerProfileId === post.profileId) {
+			newPost = await dbClient.jobPost.update({
+				where: { id: post.postId },
+				data,
+			});
+		} else {
+			newPost = await dbClient.jobPost.update({
+				where: { id: post.postId },
+				data: {
+					anyoneApplied: true,
+					numOfApplicants: post.numOfApplicants,
+				},
+			});
+		}
 
 		return newPost;
 	}

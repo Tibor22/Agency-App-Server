@@ -93,7 +93,9 @@ model JobPost {
   createdAt        DateTime @default(now())
   requirements     Requirements?
   imageUrl         String?
-  employeeProfiles      JobPostsOnEmployeeProfiles[]
+  employeeProfiles JobPostsOnEmployeeProfiles[]
+  anyoneApplied    Boolean @default(false)
+
 }
 
 model Requirements {

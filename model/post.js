@@ -124,4 +124,22 @@ export default class Post {
 
 		return allPost;
 	}
+
+	static async update(post) {
+		const postDetailsArr = [];
+
+		console.log('POST OBJ:', post);
+		for (let [key, value] of Object.entries(post)) {
+			if (key === 'userId') continue;
+			postDetailsArr.push([key, value]);
+		}
+		const data = Object.fromEntries(postDetailsArr);
+		console.log('DATA INSIDE POST MODEL:', data);
+		const newPost = await dbClient.jobPost.update({
+			where: { id: post.userId },
+			data,
+		});
+
+		return newPost;
+	}
 }

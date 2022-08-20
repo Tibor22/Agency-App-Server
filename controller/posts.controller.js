@@ -42,3 +42,12 @@ export const getAllPosts = async (req, res) => {
 
 	res.status(200).send(allPost);
 };
+
+export const updatePost = async (req, res) => {
+	console.log(req.body);
+
+	if (req.body.anyoneApplied) {
+		const newPost = await Post.update({ ...req.body, userId: req.user.id });
+		res.json({ answer: newPost });
+	}
+};

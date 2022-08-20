@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import { authenticateUser } from '../../middleware/auth.js';
-import { createPost, getAllPosts } from '../../controller/posts.controller.js';
+import {
+	createPost,
+	getAllPosts,
+	updatePost,
+} from '../../controller/posts.controller.js';
 import multer from 'multer';
 
 const storage = multer.diskStorage({
@@ -22,4 +26,5 @@ postsRouter.post('/image', upload.single('file'), function (req, res) {
 
 postsRouter.post('/create', authenticateUser, createPost);
 postsRouter.get('/', getAllPosts);
+postsRouter.patch('/update/:id', authenticateUser, updatePost);
 export default postsRouter;

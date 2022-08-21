@@ -56,6 +56,9 @@ export const updatePost = async (req, res) => {
 };
 
 export const deletePost = async (req, res) => {
+	const type = req.user.type;
+	if (type === 'employee')
+		throw new Error('You are not authorized to delete this job');
 	const postId = +req.params.id;
 	const profileId = +req.query.profileId;
 

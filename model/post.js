@@ -160,16 +160,13 @@ export default class Post {
 	}
 
 	static async delete(post) {
-		console.log('POST:', post);
 		const getPost = await dbClient.jobPost.findUnique({
 			where: { id: post.postId },
 		});
-		console.log('GETPOST:', getPost);
 		if (
 			getPost.employerProfileId === post.profileId &&
 			!getPost.anyoneApplied
 		) {
-			console.log('INSIDE IF:');
 			const deletedPost = await dbClient.jobPost.delete({
 				where: { id: post.postId },
 			});

@@ -128,29 +128,25 @@ export default class Post {
 	static async update(post) {
 		const postDetailsArr = [];
 		let newPost = [];
-
-		console.log('POST OBJ:', post);
 		for (let [key, value] of Object.entries(post)) {
 			if (key === 'userId') continue;
 			if (key === 'postId') continue;
 			if (key === 'profileId') continue;
+			if (key === 'type') continue;
 
 			postDetailsArr.push([key, value]);
 		}
 		const data = Object.fromEntries(postDetailsArr);
-		console.log('DATA INSIDE POST MODEL:', data);
 
 		const getPost = await dbClient.jobPost.findUnique({
 			where: { id: post.postId },
 		});
-		console.log(getPost);
-		console.log('PROFILEID:', post.profileId);
 		if (!post.anyoneApplied && getPost.employerProfileId === post.profileId) {
 			newPost = await dbClient.jobPost.update({
 				where: { id: post.postId },
 				data,
 			});
-		} else {
+		} else if (post.type == 'employee') {
 			newPost = await dbClient.jobPost.update({
 				where: { id: post.postId },
 				data: {
@@ -158,8 +154,27 @@ export default class Post {
 					numOfApplicants: post.numOfApplicants,
 				},
 			});
-		}
+		} else return [];
 
 		return newPost;
+	}
+
+	static async delete(post) {
+		console.log('POST:', post);
+		const getPost = await dbClient.jobPost.findUnique({
+			where: { id: post.postId },
+		});
+		console.log('GETPOST:', getPost);
+		if (
+			getPost.employerProfileId === post.profileId &&
+			!getPost.anyoneApplied
+		) {
+			console.log('INSIDE IF:');
+			const deletedPost = await dbClient.jobPost.delete({
+				where: { id: post.postId },
+			});
+
+			return deletedPost;
+		} else return [];
 	}
 }

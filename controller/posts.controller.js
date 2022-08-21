@@ -44,6 +44,22 @@ export const getAllPosts = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-	const newPost = await Post.update({ ...req.body, userId: req.user.id });
+	const type = req.user.type;
+	const postId = +req.params.id;
+	const newPost = await Post.update({
+		...req.body,
+		userId: req.user.id,
+		postId,
+		type: type,
+	});
 	return res.json(newPost);
+};
+
+export const deletePost = async (req, res) => {
+	const postId = +req.params.id;
+	const profileId = +req.query.profileId;
+
+	const deletedPost = await Post.delete({ profileId, postId });
+
+	return res.json({ deletedPost });
 };

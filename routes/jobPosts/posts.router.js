@@ -4,6 +4,7 @@ import {
 	createPost,
 	getAllPosts,
 	updatePost,
+	deletePost,
 } from '../../controller/posts.controller.js';
 import multer from 'multer';
 
@@ -27,4 +28,5 @@ postsRouter.post('/image', upload.single('file'), function (req, res) {
 postsRouter.post('/create', authenticateUser, createPost);
 postsRouter.get('/', getAllPosts);
 postsRouter.patch('/update/:id', authenticateUser, updatePost);
+postsRouter.delete('/:id', authenticateUser, deletePost);
 export default postsRouter;

@@ -67,7 +67,7 @@ model EmployerProfile {
 }
 
 model JobPostsOnEmployeeProfiles {
-  jobPost       JobPost     @relation(fields: [jobPostId], references: [id])
+  jobPost       JobPost     @relation(fields: [jobPostId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   jobPostId     Int // relation scalar field (used in the `@relation` attribute above)
   employeeProfile   EmployeeProfile @relation(fields: [employeeProfileId], references: [id])
   employeeProfileId Int // relation scalar field (used in the `@relation` attribute above)

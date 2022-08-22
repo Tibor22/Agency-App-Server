@@ -44,6 +44,10 @@ export const getAllPosts = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
+	if (!req.body?.imageUrl?.startsWith('/images')) {
+		req.body.imageUrl = `/images/${req.body.imageUrl}`;
+	}
+
 	const type = req.user.type;
 	const postId = +req.params.id;
 	const newPost = await Post.update({
@@ -52,6 +56,7 @@ export const updatePost = async (req, res) => {
 		postId,
 		type: type,
 	});
+	console.log(newPost);
 	return res.json(newPost);
 };
 
@@ -61,6 +66,8 @@ export const deletePost = async (req, res) => {
 		throw new Error('You are not authorized to delete this job');
 	const postId = +req.params.id;
 	const profileId = +req.query.profileId;
+
+	console.log(postId, profileId);
 
 	const deletedPost = await Post.delete({ profileId, postId });
 

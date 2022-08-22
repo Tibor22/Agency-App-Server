@@ -133,25 +133,34 @@ export default class Post {
 			if (key === 'postId') continue;
 			if (key === 'profileId') continue;
 			if (key === 'type') continue;
-
+			if (key === 'salary') value = +value;
+			if (key === 'numOfApplicants') value = +value;
 			postDetailsArr.push([key, value]);
 		}
 		const data = Object.fromEntries(postDetailsArr);
+		console.log('DATA:', data);
 
 		const getPost = await dbClient.jobPost.findUnique({
 			where: { id: post.postId },
 		});
+		console.log('GETPOST:', getPost);
+		if ((getPost.numOfApplicants -= 1 < 0))
+			return 'Application has been filled up';
 		if (!post.anyoneApplied && getPost.employerProfileId === post.profileId) {
-			newPost = await dbClient.jobPost.update({
-				where: { id: post.postId },
-				data,
-			});
+			try {
+				newPost = await dbClient.jobPost.update({
+					where: { id: post.postId },
+					data,
+				});
+			} catch (e) {
+				console.log(e);
+			}
 		} else if (post.type == 'employee') {
 			newPost = await dbClient.jobPost.update({
 				where: { id: post.postId },
 				data: {
 					anyoneApplied: true,
-					numOfApplicants: post.numOfApplicants,
+					numOfApplicants: (getPost.numOfApplicants -= 1),
 				},
 			});
 		} else return [];

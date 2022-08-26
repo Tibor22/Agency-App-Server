@@ -48,6 +48,7 @@ export const updatePost = async (req, res) => {
 		req.body.imageUrl = `/images/${req.body.imageUrl}`;
 	}
 
+	console.log(req.body, req.params.id);
 	const type = req.user.type;
 	const postId = +req.params.id;
 	const newPost = await Post.update({
@@ -56,7 +57,7 @@ export const updatePost = async (req, res) => {
 		postId,
 		type: type,
 	});
-	console.log(newPost);
+	console.log('NEWPOST:', newPost);
 	return res.json(newPost);
 };
 

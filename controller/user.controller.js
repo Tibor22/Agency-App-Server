@@ -86,13 +86,13 @@ export const getProfileWithJobs = async (req, res) => {
 	const id = +req.params.id;
 	const type = req.user.type;
 	const profileId = +req.query.profileId;
-	const gte = new Date(Date.now()).toISOString();
+	// const gte = new Date(Date.now()).toISOString();
 	let foundUser;
 	if (type === 'employee') {
 		foundUser = await Profile.getEmployeeAndJobs(id, profileId);
 	}
 	if (type === 'employer') {
-		foundUser = await Profile.getEmployerAndJobs(id, gte);
+		foundUser = await Profile.getEmployerAndJobs(id);
 	}
 	delete foundUser.password;
 	res.status(200).send(foundUser);

@@ -168,9 +168,9 @@ export default class Profile {
 					include: {
 						jobPost: {
 							where: {
-								endDate: {
-									gte,
-								},
+								// endDate: {
+								// 	gte,
+								// },
 							},
 						},
 					},

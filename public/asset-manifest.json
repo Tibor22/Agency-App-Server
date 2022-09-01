@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.1e98c0e7.css",
-    "main.js": "/static/js/main.9bd83fe6.js",
+    "main.js": "/static/js/main.f7362cf1.js",
     "static/media/home.png": "/static/media/home.88819365fd7613610517.png",
     "static/media/signUp.png": "/static/media/signUp.5a1deabcacc5c85b4994.png",
     "static/media/jobFormLG.png": "/static/media/jobFormLG.1f43a73db45e89d66575.png",
@@ -17,10 +17,10 @@
     "static/media/hake.png": "/static/media/hake.77605d340688b8212759.png",
     "index.html": "/index.html",
     "main.1e98c0e7.css.map": "/static/css/main.1e98c0e7.css.map",
-    "main.9bd83fe6.js.map": "/static/js/main.9bd83fe6.js.map"
+    "main.f7362cf1.js.map": "/static/js/main.f7362cf1.js.map"
   },
   "entrypoints": [
     "static/css/main.1e98c0e7.css",
-    "static/js/main.9bd83fe6.js"
+    "static/js/main.f7362cf1.js"
   ]
 }

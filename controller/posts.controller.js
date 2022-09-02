@@ -1,6 +1,8 @@
 import Post from '../model/post.js';
 
 export const createPost = async (req, res) => {
+	console.log('BODY:', req.body);
+	console.log('FILE', req.file);
 	req.body.userId = req.user.id;
 	if (req.body?.imgUrl) {
 		req.body.imgUrl = `/images/${req.body.imgUrl}`;
@@ -11,6 +13,7 @@ export const createPost = async (req, res) => {
 			throw new Error('Not authorized to make jobPost request');
 		}
 		const createPost = Post.fromJSON(req.body);
+		console.log('CREATED POST', createPost);
 		const finalPost = await createPost.create();
 		res.status(201).send(finalPost);
 	} catch (e) {

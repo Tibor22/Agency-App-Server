@@ -71,23 +71,27 @@ export default class Post {
 		});
 
 		console.log('PROFILE', profile);
-		const createdPost = await dbClient.jobPost.create({
-			data: {
-				employerProfileId: profile.id,
-				companyName: this.companyName,
-				content: this.content,
-				numOfApplicants: this.numOfApplicants,
-				jobType: this.jobType,
-				startDate: this.startDate,
-				endDate: this.endDate,
-				salary: this.salary,
-				location: this.location,
-				timeFrame: this.timeFrame,
-				imageUrl: this.imgUrl,
-			},
-		});
+		try {
+			const createdPost = await dbClient.jobPost.create({
+				data: {
+					employerProfileId: profile.id,
+					companyName: this.companyName,
+					content: this.content,
+					numOfApplicants: this.numOfApplicants,
+					jobType: this.jobType,
+					startDate: this.startDate,
+					endDate: this.endDate,
+					salary: this.salary,
+					location: this.location,
+					timeFrame: this.timeFrame,
+					imageUrl: this.imgUrl,
+				},
+			});
 
-		return createdPost;
+			return createdPost;
+		} catch (err) {
+			console.log(err);
+		}
 	}
 
 	static async getAll(

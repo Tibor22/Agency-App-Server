@@ -8,24 +8,23 @@ import {
 } from '../../controller/posts.controller.js';
 import multer from 'multer';
 
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, 'images/');
-	},
-	filename: (req, file, cb) => {
-		cb(null, file.originalname);
-	},
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const postsRouter = new Router();
 
-postsRouter.post('/image', upload.single('file'), function (req, res) {
-	console.log(req.body);
-	res.json({ data: req.body });
-});
+upload.single('image');
 
-postsRouter.post('/create', authenticateUser, createPost);
+// postsRouter.post('/image', upload.single('file'), function (req, res) {
+// 	console.log(req.body);
+// 	res.json({ data: req.body });
+// });
+
+postsRouter.post(
+	'/create',
+	upload.single('image'),
+	authenticateUser,
+	createPost
+);
 postsRouter.get('/', getAllPosts);
 postsRouter.patch('/update/:id', authenticateUser, updatePost);
 postsRouter.delete('/:id', authenticateUser, deletePost);

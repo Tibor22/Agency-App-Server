@@ -12,7 +12,7 @@ export default class Post {
 		salary,
 		location,
 		timeFrame,
-		imgUrl,
+		imageUrl,
 		createdAt,
 		updatedAt,
 		id
@@ -27,7 +27,7 @@ export default class Post {
 		this.salary = salary;
 		this.location = location;
 		this.timeFrame = timeFrame;
-		this.imgUrl = imgUrl;
+		this.imageUrl = imageUrl;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.id = id;
@@ -45,7 +45,7 @@ export default class Post {
 			salary,
 			location,
 			timeFrame,
-			imgUrl,
+			imageUrl,
 		} = post;
 
 		return new Post(
@@ -59,7 +59,7 @@ export default class Post {
 			+salary,
 			location,
 			timeFrame,
-			imgUrl
+			imageUrl
 		);
 	}
 
@@ -84,7 +84,7 @@ export default class Post {
 					salary: this.salary,
 					location: this.location,
 					timeFrame: this.timeFrame,
-					imageUrl: this.imgUrl,
+					imageUrl: this.imageUrl,
 				},
 			});
 
@@ -185,5 +185,11 @@ export default class Post {
 
 			return deletedPost;
 		} else return [];
+	}
+
+	static async findUnique(id) {
+		return await dbClient.jobPost.findUnique({
+			where: { id },
+		});
 	}
 }

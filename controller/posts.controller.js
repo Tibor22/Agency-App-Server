@@ -1,9 +1,53 @@
 import Post from '../model/post.js';
+import sharp from 'sharp';
+import crypto from 'crypto';
+import {
+	S3Client,
+	PutObjectCommand,
+	GetObjectCommand,
+	DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+const bucketName = process.env.BUCKET_NAME;
+const bucketRegion = process.env.BUCKET_REGION;
+const accessKey = process.env.ACCESS_KEY;
+const secretAccessKey = process.env.SECRET_ACCESS_KEY;
+
+const s3 = new S3Client({
+	credentials: {
+		accessKeyId: accessKey,
+		secretAccessKey: secretAccessKey,
+	},
+
+	region: bucketRegion,
+});
 
 export const createPost = async (req, res) => {
 	console.log('BODY:', req.body);
 	console.log('FILE', req.file);
 	req.body.userId = req.user.id;
+
+	//resize image
+	const buffer = await sharp(req.file.buffer)
+		.resize({ height: 100, width: 100, fit: 'contain' })
+		.toBuffer();
+
+	const randomImageName = (bytes = 32) =>
+		crypto.randomBytes(bytes).toString('hex');
+
+	const imageName = randomImageName();
+	const params = {
+		Bucket: bucketName,
+		Key: imageName,
+		Body: buffer,
+		ContentType: req.file.mimetype,
+	};
+
+	const command = new PutObjectCommand(params);
+
+	await s3.send(command);
+
 	if (req.body?.imgUrl) {
 		req.body.imgUrl = `/images/${req.body.imgUrl}`;
 	}
@@ -12,7 +56,7 @@ export const createPost = async (req, res) => {
 		if (req.user.type !== 'employer') {
 			throw new Error('Not authorized to make jobPost request');
 		}
-		const createPost = Post.fromJSON(req.body);
+		const createPost = Post.fromJSON({ ...req.body, imageUrl: imageName });
 		console.log('CREATED POST', createPost);
 		const finalPost = await createPost.create();
 		res.status(201).send(finalPost);
@@ -43,6 +87,17 @@ export const getAllPosts = async (req, res) => {
 		gteDate
 	);
 
+	for (const post of allPost) {
+		if (post.imageUrl === null) continue;
+		const getObjectParams = {
+			Bucket: bucketName,
+			Key: post.imageUrl,
+		};
+		const command = new GetObjectCommand(getObjectParams);
+		const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+		post.imageUrl = url;
+	}
+	console.log(allPost);
 	res.status(200).send(allPost);
 };
 
@@ -72,7 +127,17 @@ export const deletePost = async (req, res) => {
 	const profileId = +req.query.profileId;
 
 	console.log(postId, profileId);
+	const foundPost = await Post.findUnique(postId);
 
+	if (!foundPost) {
+		res.status(404).send('Post not found');
+	}
+	const params = {
+		Bucket: bucketName,
+		Key: foundPost.imageUrl,
+	};
+	const command = new DeleteObjectCommand(params);
+	await s3.send(command);
 	const deletedPost = await Post.delete({ profileId, postId });
 
 	return res.json({ deletedPost });

@@ -149,7 +149,8 @@ export default class Post {
 		const getPost = await dbClient.jobPost.findUnique({
 			where: { id: post.postId },
 		});
-		if ((getPost.numOfApplicants -= 1) < 0)
+
+		if (getPost.numOfApplicants - 1 < 0)
 			return 'Application has been filled up';
 
 		if (post.anyoneApplied && getPost.employerProfileId === +post.profileId) {

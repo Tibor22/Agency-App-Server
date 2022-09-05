@@ -76,10 +76,12 @@ export const getAllPosts = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-	let imageUrl = null;
 	if (req.file) {
 		const bucket = new S3Bucket(req.file);
-		imageUrl = await bucket.send();
+		const imageUrl = await bucket.send();
+		if (req.body.imageUrl !== 'null') {
+			await S3Bucket.delete(+req.body.id);
+		}
 		req.body.imageUrl = imageUrl;
 	} else {
 		delete req.body.imageUrl;
@@ -103,7 +105,6 @@ export const deletePost = async (req, res) => {
 	const postId = +req.params.id;
 	const profileId = +req.query.profileId;
 
-	console.log(postId, profileId);
 	const foundPost = await Post.findUnique(postId);
 
 	if (!foundPost) {

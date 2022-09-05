@@ -7,6 +7,7 @@ import {
 	DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import Post from '../model/post.js';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
@@ -43,7 +44,6 @@ export default class S3Bucket {
 			ContentType: this.file.mimetype,
 		};
 
-		console.log('PARAMS>0', params);
 		const command = new PutObjectCommand(params);
 
 		await s3.send(command);
@@ -58,6 +58,16 @@ export default class S3Bucket {
 		const command = new GetObjectCommand(getObjectParams);
 		const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
 		post.imageUrl = url;
+	}
+
+	static async delete(postId) {
+		const foundPost = await Post.findUnique(postId);
+		const params = {
+			Bucket: bucketName,
+			Key: foundPost.imageUrl,
+		};
+		const command = new DeleteObjectCommand(params);
+		await s3.send(command);
 	}
 }
 

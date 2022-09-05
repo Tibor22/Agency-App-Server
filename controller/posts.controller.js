@@ -8,6 +8,7 @@ import {
 	DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import S3Bucket from '../utils/S3Bucket.js';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
@@ -27,37 +28,17 @@ export const createPost = async (req, res) => {
 	console.log('BODY:', req.body);
 	console.log('FILE', req.file);
 	req.body.userId = req.user.id;
-
-	//resize image
-	const buffer = await sharp(req.file.buffer)
-		.resize({ height: 100, width: 100, fit: 'contain' })
-		.toBuffer();
-
-	const randomImageName = (bytes = 32) =>
-		crypto.randomBytes(bytes).toString('hex');
-
-	const imageName = randomImageName();
-	const params = {
-		Bucket: bucketName,
-		Key: imageName,
-		Body: buffer,
-		ContentType: req.file.mimetype,
-	};
-
-	const command = new PutObjectCommand(params);
-
-	await s3.send(command);
-
-	if (req.body?.imgUrl) {
-		req.body.imgUrl = `/images/${req.body.imgUrl}`;
+	let imageUrl = null;
+	if (req.file) {
+		const bucket = new S3Bucket(req.file);
+		imageUrl = await bucket.send();
 	}
 
 	try {
 		if (req.user.type !== 'employer') {
 			throw new Error('Not authorized to make jobPost request');
 		}
-		const createPost = Post.fromJSON({ ...req.body, imageUrl: imageName });
-		console.log('CREATED POST', createPost);
+		const createPost = Post.fromJSON({ ...req.body, imageUrl });
 		const finalPost = await createPost.create();
 		res.status(201).send(finalPost);
 	} catch (e) {
@@ -89,24 +70,21 @@ export const getAllPosts = async (req, res) => {
 
 	for (const post of allPost) {
 		if (post.imageUrl === null) continue;
-		const getObjectParams = {
-			Bucket: bucketName,
-			Key: post.imageUrl,
-		};
-		const command = new GetObjectCommand(getObjectParams);
-		const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-		post.imageUrl = url;
+		await S3Bucket.get(post);
 	}
-	console.log(allPost);
 	res.status(200).send(allPost);
 };
 
 export const updatePost = async (req, res) => {
-	if (!req.body?.imageUrl?.startsWith('/images')) {
-		req.body.imageUrl = `/images/${req.body.imageUrl}`;
+	let imageUrl = null;
+	if (req.file) {
+		const bucket = new S3Bucket(req.file);
+		imageUrl = await bucket.send();
+		req.body.imageUrl = imageUrl;
+	} else {
+		delete req.body.imageUrl;
 	}
 
-	console.log(req.body, req.params.id);
 	const type = req.user.type;
 	const postId = +req.params.id;
 	const newPost = await Post.update({
@@ -115,7 +93,6 @@ export const updatePost = async (req, res) => {
 		postId,
 		type: type,
 	});
-	console.log('NEWPOST:', newPost);
 	return res.json(newPost);
 };
 

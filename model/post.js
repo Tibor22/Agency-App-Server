@@ -70,7 +70,6 @@ export default class Post {
 			},
 		});
 
-		console.log('PROFILE', profile);
 		try {
 			const createdPost = await dbClient.jobPost.create({
 				data: {
@@ -134,22 +133,26 @@ export default class Post {
 		let newPost = [];
 		for (let [key, value] of Object.entries(post)) {
 			if (key === 'userId') continue;
+			if (key === 'id') continue;
 			if (key === 'postId') continue;
 			if (key === 'profileId') continue;
+			if (key === 'image') continue;
 			if (key === 'type') continue;
 			if (key === 'salary') value = +value;
 			if (key === 'numOfApplicants') value = +value;
+			if (key === 'anyoneApplied' && value == 'false') value = false;
+
 			postDetailsArr.push([key, value]);
 		}
 		const data = Object.fromEntries(postDetailsArr);
-		console.log('DATA:', data);
 
 		const getPost = await dbClient.jobPost.findUnique({
 			where: { id: post.postId },
 		});
 		if ((getPost.numOfApplicants -= 1) < 0)
 			return 'Application has been filled up';
-		if (!post.anyoneApplied && getPost.employerProfileId === post.profileId) {
+
+		if (post.anyoneApplied && getPost.employerProfileId === +post.profileId) {
 			try {
 				newPost = await dbClient.jobPost.update({
 					where: { id: post.postId },

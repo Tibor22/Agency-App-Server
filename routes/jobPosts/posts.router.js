@@ -26,6 +26,11 @@ postsRouter.post(
 	createPost
 );
 postsRouter.get('/', getAllPosts);
-postsRouter.patch('/update/:id', authenticateUser, updatePost);
+postsRouter.patch(
+	'/update/:id',
+	upload.single('image'),
+	authenticateUser,
+	updatePost
+);
 postsRouter.delete('/:id', authenticateUser, deletePost);
 export default postsRouter;

@@ -23,7 +23,12 @@ userRouter.post('/login', loginUser);
 userRouter.get('/:email', validateUserByEmail);
 userRouter.get('/find/:id', authenticateUser, getUserById);
 userRouter.get('/findProfile/:id', authenticateUser, getProfileWithJobs);
-userRouter.patch('/profile/update/:id', authenticateUser, updateProfile);
+userRouter.patch(
+	'/profile/update/:id',
+	upload.single('image'),
+	authenticateUser,
+	updateProfile
+);
 userRouter.post(
 	'/profile/connect-profile/:id',
 	authenticateUser,

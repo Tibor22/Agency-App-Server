@@ -91,27 +91,39 @@ export const getProfileWithJobs = async (req, res) => {
 	let foundUser;
 	if (type === 'employee') {
 		foundUser = await Profile.getEmployeeAndJobs(id, profileId);
-	}
-	if (type === 'employer') {
+
+		if (foundUser.jobPosts) {
+			for (const post of foundUser.jobPosts) {
+				if (post.imageUrl === null) continue;
+				await S3Bucket.get(post);
+			}
+		}
+		if (foundUser.employeeProfile.profileImgUrl) {
+			foundUser.employeeProfile.profileImgUrl = await S3Bucket.get(
+				foundUser.employeeProfile
+			);
+		}
+	} else if (type === 'employer') {
 		foundUser = await Profile.getEmployerAndJobs(id);
 		for (const post of foundUser.employerProfile.jobPost) {
 			if (post.imageUrl === null) continue;
 			await S3Bucket.get(post);
 		}
+		if (foundUser.employerProfile.profileImgUrl) {
+			foundUser.employerProfile.profileImgUrl = await S3Bucket.get(
+				foundUser.employerProfile
+			);
+		}
 	}
-	console.log(foundUser.employerProfile);
-	delete foundUser.password;
 
-	// foundUser.jobPost.forEach((job) => {
-	// 	console.log(job);
-	// });
+	delete foundUser.password;
 
 	res.status(200).send(foundUser);
 };
 
 export const updateProfile = async (req, res) => {
 	let [value] = Object.values(req.body);
-	const [name] = Object.keys(req.body);
+	let [name] = Object.keys(req.body);
 	const type = req.user.type;
 	const userId = +req.user.id;
 	if (name === 'phoneNum') {
@@ -121,7 +133,21 @@ export const updateProfile = async (req, res) => {
 		value = +value;
 	}
 
+	if (req.file) {
+		const foundUser = await User.findBy('id', userId);
+		if (
+			foundUser.employeeProfile?.profileImgUrl ||
+			foundUser.employerProfile?.profileImgUrl
+		) {
+			await S3Bucket.delete(null, userId);
+		}
+		const bucket = new S3Bucket(req.file);
+		value = await bucket.send(250);
+		name = 'profileImgUrl';
+	}
+
 	const updatedUser = await Profile.update(name, value, type, userId);
+
 	res.status(200).send({ updatedUser });
 };
 

@@ -8,6 +8,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import Post from '../model/post.js';
+import User from '../model/user.js';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
@@ -27,10 +28,10 @@ export default class S3Bucket {
 		this.file = file;
 	}
 
-	async send() {
+	async send(size = 100) {
 		console.log(this.file);
 		const buffer = await sharp(this.file.buffer)
-			.resize({ height: 100, width: 100, fit: 'contain' })
+			.resize({ size: 100, size: 100, fit: 'contain' })
 			.toBuffer();
 
 		const randomImageName = (bytes = 32) =>
@@ -53,22 +54,35 @@ export default class S3Bucket {
 	static async get(post) {
 		const getObjectParams = {
 			Bucket: bucketName,
-			Key: post.imageUrl,
+			Key: post.imageUrl || post.profileImgUrl,
 		};
 		const command = new GetObjectCommand(getObjectParams);
 		const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-		console.log(url);
+
 		post.imageUrl = url;
+		return url;
 	}
 
-	static async delete(postId) {
-		const foundPost = await Post.findUnique(postId);
-		const params = {
-			Bucket: bucketName,
-			Key: foundPost.imageUrl,
-		};
-		const command = new DeleteObjectCommand(params);
-		await s3.send(command);
+	static async delete(postId, userId = false) {
+		if (userId) {
+			const foundUser = await User.findBy('id', userId);
+			const params = {
+				Bucket: bucketName,
+				Key: foundUser.employeeProfile
+					? foundUser.employeeProfile.profileImgUrl
+					: foundUser.employerProfile.profileImgUrl,
+			};
+			const command = new DeleteObjectCommand(params);
+			await s3.send(command);
+		} else {
+			const foundPost = await Post.findUnique(postId);
+			const params = {
+				Bucket: bucketName,
+				Key: foundPost.imageUrl,
+			};
+			const command = new DeleteObjectCommand(params);
+			await s3.send(command);
+		}
 	}
 }
 

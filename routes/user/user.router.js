@@ -11,20 +11,12 @@ import {
 } from '../../controller/user.controller.js';
 import multer from 'multer';
 
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, 'images/');
-	},
-	filename: (req, file, cb) => {
-		cb(null, file.originalname);
-	},
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const userRouter = new Router();
 
-userRouter.post('/image', upload.single('file'), function (req, res) {
-	res.json({ data: req.body });
-});
+upload.single('image');
+
+const userRouter = new Router();
 
 userRouter.post('/create', createUser);
 userRouter.post('/login', loginUser);

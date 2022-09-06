@@ -57,6 +57,7 @@ export default class S3Bucket {
 		};
 		const command = new GetObjectCommand(getObjectParams);
 		const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+		console.log(url);
 		post.imageUrl = url;
 	}
 

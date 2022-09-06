@@ -1,6 +1,7 @@
 import User from '../model/user.js';
 import Profile from '../model/profile.js';
 import { createToken } from '../utils/createToken.js';
+import S3Bucket from '../utils/S3Bucket.js';
 
 export const createUser = async function (req, res) {
 	const { type, terms, privacyPolicy, password } = req.body;
@@ -93,8 +94,18 @@ export const getProfileWithJobs = async (req, res) => {
 	}
 	if (type === 'employer') {
 		foundUser = await Profile.getEmployerAndJobs(id);
+		for (const post of foundUser.employerProfile.jobPost) {
+			if (post.imageUrl === null) continue;
+			await S3Bucket.get(post);
+		}
 	}
+	console.log(foundUser.employerProfile);
 	delete foundUser.password;
+
+	// foundUser.jobPost.forEach((job) => {
+	// 	console.log(job);
+	// });
+
 	res.status(200).send(foundUser);
 };
 

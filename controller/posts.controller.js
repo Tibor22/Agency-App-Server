@@ -112,10 +112,13 @@ export const deletePost = async (req, res) => {
 	}
 	const params = {
 		Bucket: bucketName,
-		Key: foundPost.imageUrl,
+		Key: foundPost?.imageUrl,
 	};
-	const command = new DeleteObjectCommand(params);
-	await s3.send(command);
+	if (foundPost.imageUrl) {
+		const command = new DeleteObjectCommand(params);
+		await s3.send(command);
+	}
+
 	const deletedPost = await Post.delete({ profileId, postId });
 
 	return res.json({ deletedPost });

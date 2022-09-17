@@ -9,8 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(express.static('images'));
-app.use('/images', express.static('images'));
+// app.use(express.static('images'));
+// app.use('/images', express.static('images'));
 app.disable('x-powered-by');
 app.use(cors());
 app.use(morgan('dev'));

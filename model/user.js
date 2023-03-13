@@ -104,7 +104,6 @@ export default class User {
 					[name]: value,
 				},
 			});
-			console.log(foundUser);
 			const type = foundUser.type;
 			if (type === 'employee') {
 				const finalUser = await dbClient.user.findUnique({

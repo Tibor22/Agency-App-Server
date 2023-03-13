@@ -32,7 +32,6 @@ export const createUser = async function (req, res) {
 export const loginUser = async (req, res) => {
 	const { email, password } = req.body;
 
-	console.log(email, password);
 	try {
 		if (!email || !password) {
 			throw new Error('Invalid email or password');

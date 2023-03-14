@@ -12,13 +12,15 @@ app.use(express.json());
 app.use('/v1', api);
 app.use(express.urlencoded({ extended: true }));
 
-// app.get('*', (req, res) => {
-// 	res.status(404).json({
-// 		status: 'fail',
-// 		data: {
-// 			resource: 'Not found',
-// 		},
-// 	});
-// });
+console.log('AGENCY TOKEN:', process.env.JWT_SECRET);
+
+app.get('*', (req, res) => {
+	res.status(404).json({
+		status: 'fail',
+		data: {
+			resource: 'Not found',
+		},
+	});
+});
 
 export default app;

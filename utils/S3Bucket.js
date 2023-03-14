@@ -85,24 +85,3 @@ export default class S3Bucket {
 		}
 	}
 }
-
-// const sendToS3 = async () => {
-// 	const buffer = await sharp(req.file.buffer)
-// 		.resize({ height: 100, width: 100, fit: 'contain' })
-// 		.toBuffer();
-
-// 	const randomImageName = (bytes = 32) =>
-// 		crypto.randomBytes(bytes).toString('hex');
-
-// 	const imageName = randomImageName();
-// 	const params = {
-// 		Bucket: bucketName,
-// 		Key: imageName,
-// 		Body: buffer,
-// 		ContentType: req.file.mimetype,
-// 	};
-
-// 	const command = new PutObjectCommand(params);
-
-// 	await s3.send(command);
-// };

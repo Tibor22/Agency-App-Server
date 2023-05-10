@@ -6,10 +6,28 @@ import {
 	updatePost,
 	deletePost,
 } from '../../controller/posts.controller.js';
+
+import multer from 'multer';
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 const postsRouter = new Router();
 
-postsRouter.post('/create', authenticateUser, createPost);
+upload.single('image');
+
+postsRouter.post(
+	'/create',
+	upload.single('image'),
+	authenticateUser,
+	createPost
+);
 postsRouter.get('/', getAllPosts);
-postsRouter.patch('/update/:id', authenticateUser, updatePost);
+postsRouter.patch(
+	'/update/:id',
+	upload.single('image'),
+	authenticateUser,
+	updatePost
+);
+
 postsRouter.delete('/:id', authenticateUser, deletePost);
 export default postsRouter;

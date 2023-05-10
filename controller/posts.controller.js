@@ -25,8 +25,6 @@ const s3 = new S3Client({
 });
 
 export const createPost = async (req, res) => {
-	console.log('BODY:', req.body);
-	console.log('FILE', req.file);
 	req.body.userId = req.user.id;
 	let imageUrl = null;
 	if (req.file) {
